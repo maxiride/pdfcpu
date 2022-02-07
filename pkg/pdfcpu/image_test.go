@@ -163,6 +163,56 @@ func printOptionalSMask(t *testing.T, sd *StreamDict) {
 		fmt.Printf("SMask %s: %s\n", o, sm)
 	}
 }
+
+func TestReadWriteBMP(t *testing.T) {
+
+	filename := "barcode.bmp"
+
+	// Read a PNG file and create an image object which is a stream dict.
+	sd, err := streamDictForImageFile(xRefTable, filepath.Join(inDir, filename))
+	if err != nil {
+		t.Fatalf("err: %v\n", err)
+	}
+
+	// Print the image object.
+	fmt.Printf("created imageObj: %s\n", sd)
+
+	// Print the optional SMask.
+	printOptionalSMask(t, sd)
+
+	// The file type and its extension gets decided during the call to WriteImage!
+	// These testcases all produce PNG files.
+	fnNoExt := strings.TrimSuffix(filename, filepath.Ext(filename))
+	tmpFileName1 := filepath.Join(outDir, fnNoExt)
+	fmt.Printf("tmpFileName: %s\n", tmpFileName1)
+
+	// Write the image object (as PNG file) to disk.
+	// fn1 is the resulting fileName path including the suffix (aka filetype extension).
+	fn1, err := WriteImage(xRefTable, tmpFileName1, sd, false, 0)
+	if err != nil {
+		t.Fatalf("err: %v\n", err)
+	}
+
+	// Since image/png does not write all ancillary chunks (eg. pHYs for dpi)
+	// we can only compare against a PNG file which resulted from using image/png.
+
+	// Read in a PNG file created by pdfcpu and create an image object.
+	sd, err = streamDictForImageFile(xRefTable, fn1)
+	if err != nil {
+		t.Fatalf("err: %v\n", err)
+	}
+
+	// Write the image object (as PNG file) to disk.s
+	fn2, err := WriteImage(xRefTable, tmpFileName1+"2", sd, false, 0)
+	if err != nil {
+		t.Fatalf("err: %v\n", err)
+	}
+
+	// ..and compare each other.
+	compare(t, fn1, fn2)
+
+}
+
 func TestReadWritePNGAndWEBP(t *testing.T) {
 
 	for _, filename := range []string{

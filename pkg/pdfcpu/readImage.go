@@ -31,13 +31,14 @@ import (
 
 	"github.com/pdfcpu/pdfcpu/pkg/filter"
 	"github.com/pkg/errors"
+	_ "golang.org/x/image/bmp"
 	_ "golang.org/x/image/webp"
 )
 
 // ImageFileName returns true for supported image file types.
 func ImageFileName(fileName string) bool {
 	ext := strings.ToLower(filepath.Ext(fileName))
-	return MemberOf(ext, []string{".png", ".webp", ".tif", ".tiff", ".jpg", ".jpeg"})
+	return MemberOf(ext, []string{".png", ".webp", ".tif", ".tiff", ".jpg", ".jpeg", ".bmp"})
 }
 
 // ImageFileNames returns a slice of image file names contained in dir.

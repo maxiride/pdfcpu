@@ -1016,7 +1016,7 @@ func setImageWatermark(s string, wm *Watermark) error {
 		return nil
 	}
 	if !ImageFileName(s) {
-		return errors.New("imageFileName has to have one of these extensions: .jpg, .jpeg, .png, .tif, .tiff, .webp")
+		return errors.New("imageFileName has to have one of these extensions: .jpg, .jpeg, .png, .tif, .tiff, .webp, .bmp")
 	}
 	wm.FileName = s
 	f, err := os.Open(wm.FileName)
