@@ -30,6 +30,7 @@ import (
 	"github.com/pdfcpu/pdfcpu/pkg/filter"
 	"github.com/pdfcpu/pdfcpu/pkg/log"
 	"github.com/pkg/errors"
+	"golang.org/x/image/bmp"
 )
 
 // Errors to be identified.
@@ -338,6 +339,18 @@ func renderDeviceRGBToPNG(im *PDFImage, resourceName string) (io.Reader, string,
 	if err := png.Encode(&buf, img); err != nil {
 		return nil, "", err
 	}
+
+	// Why a  img *image.NRGBA obtained from a bitmap decoding is re-encoded as blank png?
+	// usng bmp.Encode does re-encode correctly the image
+	f, err := os.CreateTemp("", "test-pdfcpu-*.bmp")
+	if err != nil {
+		panic(err)
+	}
+	err = bmp.Encode(f, img)
+	if err != nil {
+		panic(err)
+	}
+	f.Close()
 
 	return &buf, "png", nil
 }
